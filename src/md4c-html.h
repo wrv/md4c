@@ -40,6 +40,10 @@
 #define MD_HTML_FLAG_XHTML                  0x0008
 
 
+typedef struct MD_HTML_tag MD_HTML;
+struct MD_HTML_tag;
+
+
 /* Render Markdown into HTML.
  *
  * Note only contents of <body> tag is generated. Caller must generate
@@ -58,6 +62,9 @@
  */
 int md_html(const MD_CHAR* input, MD_SIZE input_size,
             void (*process_output)(const MD_CHAR*, MD_SIZE, void*),
+            void (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
+                  void (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/)),
+            void (*record_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/),
             void* userdata, unsigned parser_flags, unsigned renderer_flags);
 
 
