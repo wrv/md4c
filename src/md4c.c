@@ -78,11 +78,14 @@
             ctx->parser.debug_log((msg), ctx->userdata);                \
     } while(0)
 
-#ifdef DEBUG
+/* MD_ASSERT() would catch memory safety bugs which have been reported upstream,
+   so we enable it unconditionally.
+ */
+#if defined(DEBUG) || 1
     #define MD_ASSERT(cond)                                             \
             do {                                                        \
                 if(!(cond)) {                                           \
-                    MD_LOG(__FILE__ ":" STRINGIZE(__LINE__) ": "        \
+                    MD_LOG("md4c/src/md4c.c" ":" STRINGIZE(__LINE__) ": "        \
                            "Assertion '" STRINGIZE(cond) "' failed.");  \
                     exit(1);                                            \
                 }                                                       \
