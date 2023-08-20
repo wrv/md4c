@@ -2660,10 +2660,17 @@ md_rollback(MD_CTX* ctx, int opener_index, int closer_index, int how)
             if (same) break;
         }
 
-        if(chain->tail >= 0)
+        if(chain->tail >= 0) {
             ctx->marks[chain->tail].next = -1;
-        else
+            // Malicious code can cause openers without a next, which then does bad
+            // things indexing into the marks array.
+            if (ctx->marks[chain->tail].flags & MD_MARK_OPENER) {
+                ctx->marks[chain->tail].flags &= ~(MD_MARK_OPENER);
+                ctx->marks[chain->tail].flags |= (MD_MARK_POTENTIAL_OPENER);
+            }
+        } else {
             chain->head = -1;
+        }
     }
 
     /* Go backwards so that unresolved openers are re-added into their
@@ -3395,10 +3402,17 @@ md_analyze_bracket(MD_CTX* ctx, int mark_index)
         /* Pop the opener from the chain. */
         int opener_index = BRACKET_OPENERS.tail;
         MD_MARK* opener = &ctx->marks[opener_index];
-        if(opener->prev >= 0)
+        if(opener->prev >= 0) {
             ctx->marks[opener->prev].next = -1;
-        else
+            // Malicious code can cause openers without a next, which then does bad
+            // things indexing into the marks array.
+            if (ctx->marks[opener->prev].flags & MD_MARK_OPENER) {
+                ctx->marks[opener->prev].flags &= ~(MD_MARK_OPENER);
+                ctx->marks[opener->prev].flags |= (MD_MARK_POTENTIAL_OPENER);
+            }
+        } else{
             BRACKET_OPENERS.head = -1;
+        }
         BRACKET_OPENERS.tail = opener->prev;
 
         /* Interconnect the opener and closer. */
