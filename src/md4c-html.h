@@ -44,6 +44,14 @@ typedef struct MD_HTML_tag MD_HTML;
 struct MD_HTML_tag;
 
 
+typedef struct MD_HTML_CALLBACKS_tag MD_HTML_CALLBACKS;
+struct MD_HTML_CALLBACKS_tag {
+    void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
+    void (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
+            void (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
+    void (*record_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/);
+};
+
 /* Render Markdown into HTML.
  *
  * Note only contents of <body> tag is generated. Caller must generate
@@ -60,11 +68,7 @@ struct MD_HTML_tag;
  * Returns -1 on error (if md_parse() fails.)
  * Returns 0 on success.
  */
-int md_html(const MD_CHAR* input, MD_SIZE input_size,
-            void (*process_output)(const MD_CHAR*, MD_SIZE, void*),
-            void (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
-                  void (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/)),
-            void (*record_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/),
+int md_html(const MD_CHAR* input, MD_SIZE input_size, MD_HTML_CALLBACKS callbacks,
             void* userdata, unsigned parser_flags, unsigned renderer_flags);
 
 
