@@ -15,6 +15,8 @@ This is a fork of [md4c](https://github.com/mity/md4c) for use in
   application to turn into URLs. This allows `[foo]($namespace::ClassName)` to be turned into
   a link to `namespace-classname.html` or whatever suits the application.
 * Moves the callbacks for md4c-html into a structure as we've added a bunch of new callbacks.
+* Allows those callbacks to report errors that flow back up into the md4c parser and terminate
+  parsing.
 
 # MD4C Readme
 

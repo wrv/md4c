@@ -46,24 +46,47 @@ struct MD_HTML_tag;
 
 typedef struct MD_HTML_CALLBACKS_tag MD_HTML_CALLBACKS;
 struct MD_HTML_CALLBACKS_tag {
-    void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
+    /*
+     * The callback is called with chunks of HTML output.
+     *
+     * Typical implementation may just output the bytes to a file or append to
+     * some buffer.
+     *
+     * This callback is required.
+     */
+     void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
     /* The callback receives the text in the self link and can adjust the text to what the
      * anchor name and link should be. It should pass that text to the render function pointer.
      *
      * This will be called twice, once for the name and once for the href. It should do the
      * same thing both times.
+     *
+     * If it returns non-0 to report an error, that error will be passed back to the parser and
+     * terminate parsing.
+     *
+     * This callback is optional, and may be NULL.
      */
-    void (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
-            void (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
+    int (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
+            int (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
     /* Called after render_self_link was called, in order to mutate any state recording the link
      * that was generated, if needed. Allows each link to be unique.
+     *
+     * If it returns non-0 to report an error, that error will be passed back to the parser and
+     * terminate parsing.
+     *
+     * This callback is optional, and may be NULL.
      */
-    void (*record_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/);
+    int (*record_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/);
     /* The callbacks receives the link text for a code link: `$[display](the link text)`. It
      * should turn the link text into a URL and pass it to the render function pointer.
+     *
+     * If it returns non-0 to report an error, that error will be passed back to the parser and
+     * terminate parsing.
+     *
+     * This callback is optional, and may be NULL.
      */
-    void (*render_code_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
-            void (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
+    int (*render_code_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
+            int (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
 };
 
 /* Render Markdown into HTML.
@@ -72,9 +95,8 @@ struct MD_HTML_CALLBACKS_tag {
  * HTML header/footer manually before/after calling md_html().
  *
  * Params input and input_size specify the Markdown input.
- * Callback process_output() gets called with chunks of HTML output.
- * (Typical implementation may just output the bytes to a file or append to
- * some buffer).
+ * Callbacks is a set of callbacks to be provided by the application which
+ * handle events during parsing and html generation.
  * Param userdata is just propagated back to process_output() callback.
  * Param parser_flags are flags from md4c.h propagated to md_parse().
  * Param render_flags is bitmask of MD_HTML_FLAG_xxxx.
