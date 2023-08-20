@@ -17,8 +17,8 @@ This is a fork of [md4c](https://github.com/mity/md4c) for use in
 * Moves the callbacks for md4c-html into a structure as we've added a bunch of new callbacks.
 * Allows those callbacks to report errors that flow back up into the md4c parser and terminate
   parsing.
-* Enable MD_ASSERT() unconditionally and add assertions to catch some known memory safety bugs
-  reported upstream that have not been resolved.
+* Enable `MD_ASSERT()`` unconditionally and add assertions to catch some known memory safety
+  bugs reported upstream that have not been resolved.
 
 # MD4C Readme
 
