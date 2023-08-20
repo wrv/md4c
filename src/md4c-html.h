@@ -47,9 +47,23 @@ struct MD_HTML_tag;
 typedef struct MD_HTML_CALLBACKS_tag MD_HTML_CALLBACKS;
 struct MD_HTML_CALLBACKS_tag {
     void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
+    /* The callback receives the text in the self link and can adjust the text to what the
+     * anchor name and link should be. It should pass that text to the render function pointer.
+     *
+     * This will be called twice, once for the name and once for the href. It should do the
+     * same thing both times.
+     */
     void (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
             void (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
+    /* Called after render_self_link was called, in order to mutate any state recording the link
+     * that was generated, if needed. Allows each link to be unique.
+     */
     void (*record_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/);
+    /* The callbacks receives the link text for a code link: `$[display](the link text)`. It
+     * should turn the link text into a URL and pass it to the render function pointer.
+     */
+    void (*render_code_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
+            void (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
 };
 
 /* Render Markdown into HTML.

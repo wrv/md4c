@@ -4293,11 +4293,20 @@ md_process_inlines(MD_CTX* ctx, const MD_LINE* lines, int n_lines)
                     title_mark = opener+2;
                     if (title_mark->ch != 'D') break;
 
-                    MD_CHECK(md_enter_leave_span_a(ctx, (mark->ch != ']'),
-                                (opener->ch == '!' ? MD_SPAN_IMG : MD_SPAN_A),
-                                STR(dest_mark->beg), dest_mark->end - dest_mark->beg, FALSE,
+                    if ((ctx->parser.flags & MD_FLAG_CODELINKS)  &&  *STR(dest_mark->beg) == '$')
+                    {
+                        MD_CHECK(md_enter_leave_span_a(ctx, (mark->ch != ']'),
+                                MD_SPAN_A_CODELINK,
+                                STR(dest_mark->beg + 1), dest_mark->end - dest_mark->beg - 1, FALSE,
                                 md_mark_get_ptr(ctx, (int)(title_mark - ctx->marks)),
 								title_mark->prev));
+                    } else {
+                        MD_CHECK(md_enter_leave_span_a(ctx, (mark->ch != ']'),
+                                    (opener->ch == '!' ? MD_SPAN_IMG : MD_SPAN_A),
+                                    STR(dest_mark->beg), dest_mark->end - dest_mark->beg, FALSE,
+                                    md_mark_get_ptr(ctx, (int)(title_mark - ctx->marks)),
+                                    title_mark->prev));
+                    }
 
                     /* link/image closer may span multiple lines. */
                     if(mark->ch == ']') {

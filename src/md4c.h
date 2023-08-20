@@ -120,6 +120,10 @@ typedef enum MD_SPANTYPE {
      * Detail: Structure MD_SPAN_A_DETAIL. */
     MD_SPAN_A_SELF,
 
+    /* <a name="xxx" href="#xxx">...</a>
+     * Detail: Structure MD_SPAN_A_DETAIL. */
+    MD_SPAN_A_CODELINK,
+
     /* <img src="xxx">...</a>
      * Detail: Structure MD_SPAN_IMG_DETAIL.
      * Note: Image text can contain nested spans and even nested images.
@@ -321,6 +325,7 @@ typedef struct MD_SPAN_WIKILINK {
 #define MD_FLAG_WIKILINKS                   0x2000  /* Enable wiki links extension. */
 #define MD_FLAG_UNDERLINE                   0x4000  /* Enable underline extension (and disables '_' for normal emphasis). */
 #define MD_FLAG_HEADERSELFLINKS             0x8000  /* Have ATX headers generate into a link to themselves. */
+#define MD_FLAG_CODELINKS                  0x10000  /* Code paths as links with []($code::path::here). */
 
 #define MD_FLAG_PERMISSIVEAUTOLINKS         (MD_FLAG_PERMISSIVEEMAILAUTOLINKS | MD_FLAG_PERMISSIVEURLAUTOLINKS | MD_FLAG_PERMISSIVEWWWAUTOLINKS)
 #define MD_FLAG_NOHTML                      (MD_FLAG_NOHTMLBLOCKS | MD_FLAG_NOHTMLSPANS)

@@ -60,6 +60,8 @@ struct MD_HTML_tag {
     void (*render_self_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html,
             void (*render)(MD_HTML* html, const MD_CHAR* data, MD_SIZE size));
     void (*record_self_link)(const MD_CHAR*, MD_SIZE, void*);
+    void (*render_code_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html,
+            void (*render)(MD_HTML* html, const MD_CHAR* data, MD_SIZE size));
     void* userdata;
     unsigned flags;
     int image_nesting_level;
@@ -162,6 +164,15 @@ render_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
 
         beg = off;
     }
+}
+
+static void
+render_codelink_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
+{
+    if (r->render_code_link)
+        r->render_code_link(data, size, r->userdata, r, render_url_escaped);
+    else
+        render_url_escaped(r, data, size);
 }
 
 static void
@@ -364,6 +375,20 @@ render_open_a_span(MD_HTML* r, const MD_SPAN_A_DETAIL* det)
 }
 
 static void
+render_open_a_codelink_span(MD_HTML* r, const MD_SPAN_A_DETAIL* det)
+{
+    RENDER_VERBATIM(r, "<a href=\"");
+    render_attribute(r, &det->href, render_codelink_url_escaped);
+
+    if(det->title.text != NULL) {
+        RENDER_VERBATIM(r, "\" title=\"");
+        render_attribute(r, &det->title, render_html_escaped);
+    }
+
+    RENDER_VERBATIM(r, "\">");
+}
+
+static void
 render_open_a_self_span(MD_HTML* r, const MD_SPAN_A_DETAIL* det)
 {
     RENDER_VERBATIM(r, "<a name=\"");
@@ -504,6 +529,7 @@ enter_span_callback(MD_SPANTYPE type, void* detail, void* userdata)
         case MD_SPAN_STRONG:            RENDER_VERBATIM(r, "<strong>"); break;
         case MD_SPAN_U:                 RENDER_VERBATIM(r, "<u>"); break;
         case MD_SPAN_A:                 render_open_a_span(r, (MD_SPAN_A_DETAIL*) detail); break;
+        case MD_SPAN_A_CODELINK:        render_open_a_codelink_span(r, (MD_SPAN_A_DETAIL*) detail); break;
         case MD_SPAN_A_SELF:            render_open_a_self_span(r, (MD_SPAN_A_DETAIL*) detail); break;
         case MD_SPAN_IMG:               render_open_img_span(r, (MD_SPAN_IMG_DETAIL*) detail); break;
         case MD_SPAN_CODE:              RENDER_VERBATIM(r, "<code>"); break;
@@ -534,6 +560,7 @@ leave_span_callback(MD_SPANTYPE type, void* detail, void* userdata)
         case MD_SPAN_STRONG:            RENDER_VERBATIM(r, "</strong>"); break;
         case MD_SPAN_U:                 RENDER_VERBATIM(r, "</u>"); break;
         case MD_SPAN_A:                 RENDER_VERBATIM(r, "</a>"); break;
+        case MD_SPAN_A_CODELINK:        RENDER_VERBATIM(r, "</a>"); break;
         case MD_SPAN_A_SELF:            RENDER_VERBATIM(r, "</a>"); break;
         case MD_SPAN_IMG:               /*noop, handled above*/ break;
         case MD_SPAN_CODE:              RENDER_VERBATIM(r, "</code>"); break;
@@ -578,7 +605,7 @@ int
 md_html(const MD_CHAR* input, MD_SIZE input_size, MD_HTML_CALLBACKS callbacks,
         void* userdata, unsigned parser_flags, unsigned renderer_flags)
 {
-    MD_HTML render = { callbacks.process_output, callbacks.render_self_link, callbacks.record_self_link, userdata, renderer_flags, 0, { 0 } };
+    MD_HTML render = { callbacks.process_output, callbacks.render_self_link, callbacks.record_self_link, callbacks.render_code_link, userdata, renderer_flags, 0, { 0 } };
     int i;
 
     MD_PARSER parser = {

@@ -11,7 +11,10 @@ This is a fork of [md4c](https://github.com/mity/md4c) for use in
 * Adds a `MD_FLAG_HEADERSELFLINKS` parser option which turns ATX headers (`# Foo`) into named
   anchors that link to themselves. This is also how Github's markdown works, so it is part
   of the `MD_DIALECT_GITHUB` option. This is also supported by the md4c-html generator.
-
+* Adds a `MD_FLAG_CODELINKS` parser option which passes links starting with `$` to the
+  application to turn into URLs. This allows `[foo]($namespace::ClassName)` to be turned into
+  a link to `namespace-classname.html` or whatever suits the application.
+* Moves the callbacks for md4c-html into a structure as we've added a bunch of new callbacks.
 
 # MD4C Readme
 
