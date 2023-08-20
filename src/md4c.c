@@ -4355,6 +4355,7 @@ md_process_inlines(MD_CTX* ctx, const MD_LINE* lines, int n_lines)
                     MD_MARK* closer = &ctx->marks[opener->next];
                     const CHAR* dest = STR(opener->end);
                     SZ dest_size = closer->beg - opener->end;
+                    MD_ASSERT(dest_size >= 0);
 
                     /* For permissive auto-links we do not know closer mark
                      * position at the time of md_collect_marks(), therefore
