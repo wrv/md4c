@@ -18,7 +18,8 @@ This is a fork of [md4c](https://github.com/mity/md4c) for use in
 * Allows those callbacks to report errors that flow back up into the md4c parser and terminate
   parsing.
 * Enable `MD_ASSERT()`` unconditionally and add assertions to catch some known memory safety
-  bugs reported upstream that have not been resolved.
+  bugs reported upstream that have not been resolved. Primarily these are assertions on almost
+  all subtractions looking for negative values, which then overflow into large unsigned values.
 
 # MD4C Readme
 
