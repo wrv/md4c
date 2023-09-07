@@ -20,6 +20,8 @@ This is a fork of [md4c](https://github.com/mity/md4c) for use in
 * Enable `MD_ASSERT()` unconditionally and add assertions to catch some known memory safety
   bugs reported upstream that have not been resolved. Primarily these are assertions on almost
   all subtractions looking for negative values, which then overflow into large unsigned values.
+* Remove integer narrowing and sign conversion warnings by asserting the conversions
+  do not lose data and then casting.
 
 # MD4C Readme
 

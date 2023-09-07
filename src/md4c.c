@@ -3153,7 +3153,8 @@ md_collect_marks(MD_CTX* ctx, const MD_LINE* lines, int n_lines, int table_mode)
                 int is_code_span;
 
                 MD_ASSERT(line_term >= line);
-                is_code_span = md_is_code_span(ctx, line, line_term - line, off,
+                MD_ASSERT(line_term - line <= INT_MAX);
+                is_code_span = md_is_code_span(ctx, line, (int)(line_term - line), off,
                                     &opener_beg, &opener_end, &closer_beg, &closer_end,
                                     codespan_last_potential_closers,
                                     &codespan_scanned_till_paragraph_end);
@@ -3168,7 +3169,8 @@ md_collect_marks(MD_CTX* ctx, const MD_LINE* lines, int n_lines, int table_mode)
                     /* Advance the current line accordingly. */
                     if(off > line_end) {
                         MD_ASSERT(line_term >= line);
-                        line = md_lookup_line(off, line, line_term - line);
+                        MD_ASSERT(line_term - line <= INT_MAX);
+                        line = md_lookup_line(off, line, (int)(line_term - line));
                         line_end = line->end;
                     }
                     continue;
@@ -3209,7 +3211,8 @@ md_collect_marks(MD_CTX* ctx, const MD_LINE* lines, int n_lines, int table_mode)
                      * it here. Doing so later in md_analyze_lt_gt() could
                      * open can of worms of quadratic complexity. */
                     MD_ASSERT(line_term >= line);
-                    is_html = md_is_html_any(ctx, line, line_term - line, off,
+                    MD_ASSERT(line_term - line <= INT_MAX);
+                    is_html = md_is_html_any(ctx, line, (int)(line_term - line), off,
                                     lines[n_lines-1].end, &html_end);
                     if(is_html) {
                         PUSH_MARK(_T('<'), off, off, MD_MARK_OPENER | MD_MARK_RESOLVED);
@@ -3221,7 +3224,8 @@ md_collect_marks(MD_CTX* ctx, const MD_LINE* lines, int n_lines, int table_mode)
                         /* Advance the current line accordingly. */
                         if(off > line_end) {
                             MD_ASSERT(line_term >= line);
-                            line = md_lookup_line(off, line, line_term - line);
+                            MD_ASSERT(line_term - line <= INT_MAX);
+                            line = md_lookup_line(off, line, (int)(line_term - line));
                             line_end = line->end;
                         }
                         continue;
@@ -5133,8 +5137,8 @@ static int
 md_consume_link_reference_definitions(MD_CTX* ctx)
 {
     MD_LINE* lines = (MD_LINE*) (ctx->current_block + 1);
-    int n_lines = ctx->current_block->n_lines;
-    int n = 0;
+    unsigned n_lines = ctx->current_block->n_lines;
+    unsigned n = 0;
 
     /* Compute how many lines at the start of the block form one or more
      * reference definitions. */
@@ -5168,7 +5172,8 @@ md_consume_link_reference_definitions(MD_CTX* ctx)
             MD_ASSERT(n_lines >= n);
             memmove(lines, lines + n, (n_lines - n) * sizeof(MD_LINE));
             ctx->current_block->n_lines -= n;
-            MD_ASSERT(ctx->n_block_bytes >= n * sizeof(MD_LINE));      
+            MD_ASSERT(ctx->n_block_bytes >= 0);
+            MD_ASSERT((unsigned)ctx->n_block_bytes >= n * sizeof(MD_LINE));
             ctx->n_block_bytes -= n * sizeof(MD_LINE);
         }
     }
@@ -5839,7 +5844,7 @@ md_is_container_mark(MD_CTX* ctx, unsigned indent, OFF beg, OFF* p_end, MD_CONTA
         max_end = ctx->size;
     p_container->start = 0;
     while(off < max_end  &&  ISDIGIT(off)) {
-        MD_ASSERT(p_container->start * 10 + CH(off) >= _T('0'));       
+        MD_ASSERT(p_container->start * 10 + CH(off) >= _T('0'));
         p_container->start = p_container->start * 10 + CH(off) - _T('0');
         off++;
     }
@@ -6029,7 +6034,8 @@ md_analyze_line(MD_CTX* ctx, OFF beg, OFF* p_end,
                    n_brothers + n_children == 0  &&  ctx->current_block == NULL  &&
                    ctx->n_block_bytes > (int) sizeof(MD_BLOCK))
                 {
-                    MD_ASSERT(ctx->n_block_bytes >= sizeof(MD_BLOCK)); 
+                    MD_ASSERT(ctx->n_block_bytes >= 0);
+                    MD_ASSERT((unsigned)ctx->n_block_bytes >= sizeof(MD_BLOCK));
                     MD_BLOCK* top_block = (MD_BLOCK*) ((char*)ctx->block_bytes + ctx->n_block_bytes - sizeof(MD_BLOCK));
                     if(top_block->type == MD_BLOCK_LI)
                         ctx->last_list_item_starts_with_two_blank_lines = TRUE;
@@ -6047,9 +6053,11 @@ md_analyze_line(MD_CTX* ctx, OFF beg, OFF* p_end,
             if(ctx->last_list_item_starts_with_two_blank_lines) {
                 if(n_parents > 0  &&  ctx->containers[n_parents-1].ch != _T('>')  &&
                    n_brothers + n_children == 0  &&  ctx->current_block == NULL  &&
-                   ctx->n_block_bytes > (int) sizeof(MD_BLOCK))
+                   ctx->n_block_bytes >= 0 &&
+                   (unsigned)ctx->n_block_bytes > sizeof(MD_BLOCK))
                 {
-                    MD_ASSERT(ctx->n_block_bytes >= sizeof(MD_BLOCK)); 
+                    MD_ASSERT(ctx->n_block_bytes >= 0);
+                    MD_ASSERT((unsigned)ctx->n_block_bytes >= sizeof(MD_BLOCK));
                     MD_BLOCK* top_block = (MD_BLOCK*) ((char*)ctx->block_bytes + ctx->n_block_bytes - sizeof(MD_BLOCK));
                     if(top_block->type == MD_BLOCK_LI)
                         n_parents--;
