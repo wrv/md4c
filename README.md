@@ -22,6 +22,7 @@ This is a fork of [md4c](https://github.com/mity/md4c) for use in
   all subtractions looking for negative values, which then overflow into large unsigned values.
 * Remove integer narrowing and sign conversion warnings by asserting the conversions
   do not lose data and then casting.
+* Bump the minimum CMake version to 3.16. Version 3.4 support is going away soon.
 
 # MD4C Readme
 
