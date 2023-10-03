@@ -204,7 +204,7 @@ render_self_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
 static int
 record_self_url(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
 {
-    if (r->render_self_link)
+    if (r->record_self_link)
         return r->record_self_link(data, size, r->userdata);
     else
         return 0;
