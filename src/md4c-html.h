@@ -56,7 +56,7 @@ struct MD_HTML_CALLBACKS_tag {
      */
      void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
     /* The callback receives the text in the self link and can adjust the text to what the
-     * anchor name and link should be. It should pass that text to the render function pointer.
+     * anchor name and link should be.
      *
      * This will be called twice, once for the name and once for the href. It should do the
      * same thing both times.
@@ -66,8 +66,7 @@ struct MD_HTML_CALLBACKS_tag {
      *
      * This callback is optional, and may be NULL.
      */
-    int (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
-            int (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
+    int (*render_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/);
     /* Called after render_self_link was called, in order to mutate any state recording the link
      * that was generated, if needed. Allows each link to be unique.
      *
@@ -78,15 +77,14 @@ struct MD_HTML_CALLBACKS_tag {
      */
     int (*record_self_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/);
     /* The callbacks receives the link text for a code link: `$[display](the link text)`. It
-     * should turn the link text into a URL and pass it to the render function pointer.
+     * should turn the link text into a URL.
      *
      * If it returns non-0 to report an error, that error will be passed back to the parser and
      * terminate parsing.
      *
      * This callback is optional, and may be NULL.
      */
-    int (*render_code_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/,
-            int (*render)(MD_HTML* /*html*/, const MD_CHAR* /*chars*/, MD_SIZE /*size*/));
+    int (*render_code_link)(const MD_CHAR* /*chars*/, MD_SIZE /*size*/, void* /*userdata*/, MD_HTML* /*html*/);
 };
 
 /* Render Markdown into HTML.
@@ -107,6 +105,7 @@ struct MD_HTML_CALLBACKS_tag {
 int md_html(const MD_CHAR* input, MD_SIZE input_size, MD_HTML_CALLBACKS callbacks,
             void* userdata, unsigned parser_flags, unsigned renderer_flags);
 
+int render_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size);
 
 #ifdef __cplusplus
     }  /* extern "C" { */

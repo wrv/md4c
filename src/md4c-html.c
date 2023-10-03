@@ -63,11 +63,9 @@ struct MD_SELF_LINK_tag {
 
 struct MD_HTML_tag {
     void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
-    int (*render_self_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html,
-            int (*render)(MD_HTML* html, const MD_CHAR* data, MD_SIZE size));
+    int (*render_self_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html);
     int (*record_self_link)(const MD_CHAR*, MD_SIZE, void*);
-    int (*render_code_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html,
-            int (*render)(MD_HTML* html, const MD_CHAR* data, MD_SIZE size));
+    int (*render_code_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html);
     void* userdata;
     unsigned flags;
     int image_nesting_level;
@@ -139,7 +137,7 @@ render_html_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
     return ret;
 }
 
-static int
+int
 render_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
 {
     static const MD_CHAR hex_chars[] = "0123456789ABCDEF";
@@ -183,7 +181,7 @@ static int
 render_codelink_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
 {
     if (r->render_code_link) {
-        return r->render_code_link(data, size, r->userdata, r, render_url_escaped);
+        return r->render_code_link(data, size, r->userdata, r);
     } else {
         render_url_escaped(r, data, size);
         return 0;
@@ -194,7 +192,7 @@ static int
 render_self_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
 {
     if (r->render_self_link) {
-        return r->render_self_link(data, size, r->userdata, r, render_url_escaped);
+        return r->render_self_link(data, size, r->userdata, r);
     } else {
         render_url_escaped(r, data, size);
         return 0;
