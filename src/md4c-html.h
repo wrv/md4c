@@ -102,7 +102,7 @@ struct MD_HTML_CALLBACKS_tag {
  * Returns -1 on error (if md_parse() fails.)
  * Returns 0 on success.
  */
-int md_html(const MD_CHAR* input, MD_SIZE input_size, MD_HTML_CALLBACKS callbacks,
+int md_html(const MD_CHAR* input, MD_SIZE input_size, const MD_HTML_CALLBACKS *callbacks,
             void* userdata, unsigned parser_flags, unsigned renderer_flags);
 
 int render_url_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size);

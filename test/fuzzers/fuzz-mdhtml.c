@@ -27,9 +27,9 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
     renderer_flags = *(unsigned*)data;
     data += sizeof(unsigned); size -= sizeof(unsigned);
-
+    MD_HTML_CALLBACKS callbacks = {process_output, NULL, NULL, NULL};
     /* Allocate enough space */
-    md_html(data, size, process_output, NULL, parser_flags, renderer_flags);
+    md_html(data, size, &callbacks, NULL, parser_flags, renderer_flags);
 
     return 0;
 }

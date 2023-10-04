@@ -662,10 +662,10 @@ debug_log_callback(const char* msg, void* userdata)
 }
 
 int
-md_html(const MD_CHAR* input, MD_SIZE input_size, MD_HTML_CALLBACKS callbacks,
+md_html(const MD_CHAR* input, MD_SIZE input_size, const MD_HTML_CALLBACKS *callbacks,
         void* userdata, unsigned parser_flags, unsigned renderer_flags)
 {
-    MD_HTML render = { callbacks.process_output, callbacks.render_self_link, callbacks.record_self_link, callbacks.render_code_link, userdata, renderer_flags, 0, { 0 } };
+    MD_HTML render = { callbacks->process_output, callbacks->render_self_link, callbacks->record_self_link, callbacks->render_code_link, userdata, renderer_flags, 0, { 0 } };
     int i;
 
     MD_PARSER parser = {

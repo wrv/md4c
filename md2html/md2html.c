@@ -142,7 +142,8 @@ process_file(FILE* in, FILE* out)
     t0 = clock();
 
     MD_HTML_CALLBACKS callbacks = { process_output, NULL, NULL, NULL };
-    ret = md_html(buf_in.data, (MD_SIZE)buf_in.size, callbacks, (void*) &buf_out,
+
+    ret = md_html(buf_in.data, (MD_SIZE)buf_in.size, &callbacks, (void*) &buf_out,
                     parser_flags, renderer_flags);
 
     t1 = clock();
