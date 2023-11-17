@@ -105,10 +105,11 @@ membuf_append(struct membuffer* buf, const char* data, MD_SIZE size)
  ***  Main program  ***
  **********************/
 
-static void
+static int
 process_output(const MD_CHAR* text, MD_SIZE size, void* userdata)
 {
     membuf_append((struct membuffer*) userdata, text, size);
+    return 0;
 }
 
 static int

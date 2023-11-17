@@ -4,7 +4,7 @@
 #include "md4c-html.h"
 
 
-static void
+static int
 process_output(const MD_CHAR* text, MD_SIZE size, void* userdata)
 {
    /* This is a dummy function because we don't need to generate any output

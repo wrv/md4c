@@ -62,7 +62,7 @@ struct MD_SELF_LINK_tag {
 };
 
 struct MD_HTML_tag {
-    void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
+    int (*process_output)(const MD_CHAR*, MD_SIZE, void*);
     int (*render_self_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html);
     int (*record_self_link)(const MD_CHAR*, MD_SIZE, void*);
     int (*render_code_link)(const MD_CHAR*, MD_SIZE, void*, MD_HTML* html);
@@ -89,8 +89,8 @@ struct MD_HTML_tag {
 static inline int
 render_verbatim(MD_HTML* r, const MD_CHAR* text, MD_SIZE size)
 {
-    r->process_output(text, size, r->userdata);
-    return 0;
+    int ret = r->process_output(text, size, r->userdata);
+    return ret;
 }
 
 /* Keep this as a macro. Most compiler should then be smart enough to replace

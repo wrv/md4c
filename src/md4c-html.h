@@ -52,9 +52,12 @@ struct MD_HTML_CALLBACKS_tag {
      * Typical implementation may just output the bytes to a file or append to
      * some buffer.
      *
+     * If it returns non-0 to report an error, that error will be passed back to the parser and
+     * terminate parsing.
+     *
      * This callback is required.
      */
-     void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
+     int (*process_output)(const MD_CHAR*, MD_SIZE, void*);
     /* The callback receives the text in the self link and can adjust the text to what the
      * anchor name and link should be.
      *
